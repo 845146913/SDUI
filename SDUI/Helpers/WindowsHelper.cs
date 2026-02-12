@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Drawing;
+using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using System.Windows.Forms.VisualStyles;
-using Microsoft.Win32;
 using static SDUI.NativeMethods;
 
 namespace SDUI.Helpers;
@@ -180,5 +181,27 @@ public static class WindowsHelper
         var dwAttribute = DWMWINDOWATTRIBUTE.DWMWA_BORDER_COLOR;
 
         DwmSetWindowAttribute(hWnd, dwAttribute, ref pvAttribute, sizeof(int));
+    }
+
+    public static void ApplyCaptionColor(IntPtr hWnd, System.Drawing.Color color)
+    {
+        var pvAttribute = ColorTranslator.ToOle(color);
+        var dwAttribute = DWMWINDOWATTRIBUTE.DWMWA_CAPTION_COLOR;
+        DwmSetWindowAttribute(hWnd, dwAttribute, ref pvAttribute, sizeof(int));
+    }
+
+    public static void MicaEffect(IntPtr hWnd)
+    {
+        if (!IsEleven)
+            return;
+
+
+        var backdrop = ColorScheme.BackColor.IsDark() ? DWMSBT_TABBEDWINDOW : DWMSBT_MAINWINDOW;
+        DwmSetWindowAttribute(
+            hWnd,
+            DWMWINDOWATTRIBUTE.DWMWA_SYSTEMBACKDROP_TYPE,
+            ref backdrop,
+            Marshal.SizeOf<int>()
+        );
     }
 }
